@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { researchers, sortResearchers, type SortKey } from "@/data/researchers";
+import { researchers, sortResearchers, getProvinceStats, type SortKey } from "@/data/researchers";
 import { translations, type Lang } from "@/data/i18n";
 
 function formatNumber(n: number): string {
@@ -31,6 +31,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState<Region>("all");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [expandedProvince, setExpandedProvince] = useState<string | null>(null);
 
   const t = translations[lang];
 
@@ -54,6 +55,13 @@ export default function Home() {
     const total_papers = filtered.reduce((s, r) => s + r.papers, 0);
     return { avg_h, avg_cit, total_papers };
   }, [filtered]);
+
+  const provinceStats = useMemo(() => {
+    const chineseOnly = researchers.filter(
+      (r) => !r.native_province_en.includes("non-Chinese") && !r.native_province_en.includes("Vietnamese")
+    );
+    return getProvinceStats(chineseOnly);
+  }, []);
 
   return (
     <main className="flex-1">
@@ -202,6 +210,10 @@ export default function Home() {
                   </div>
                   <p className="text-muted">{lang === "en" ? r.affiliation_en : r.affiliation_zh}</p>
                   <p className="text-sm">{lang === "en" ? r.field_en : r.field_zh}</p>
+                  <p className="text-sm">
+                    <span className="text-muted">{t.native_place}: </span>
+                    <span>{lang === "en" ? r.native_province_en : r.native_province_zh}</span>
+                  </p>
                   <div className="flex gap-6 flex-wrap text-sm">
                     <div>
                       <span className="text-muted">{t.h_index}: </span>
@@ -225,6 +237,99 @@ export default function Home() {
             })()}
           </div>
         )}
+
+        {/* Province Statistics */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h2 className="text-lg font-bold text-accent">{t.native_place_stats}</h2>
+              <p className="text-sm text-muted">{t.native_place_subtitle}</p>
+            </div>
+            <div className="bg-card rounded-lg px-4 py-2 border border-border text-sm">
+              <span className="text-muted">{t.provinces_covered}: </span>
+              <span className="font-bold text-accent">{provinceStats.length}</span>
+            </div>
+          </div>
+
+          {/* Bar chart */}
+          <div className="bg-card rounded-xl border border-border p-4 space-y-2">
+            {provinceStats.map((ps, i) => {
+              const maxCount = provinceStats[0].count;
+              const pct = (ps.count / maxCount) * 100;
+              const isExpanded = expandedProvince === ps.province_en;
+              return (
+                <div key={ps.province_en} className="animate-fade-in" style={{ animationDelay: `${i * 30}ms` }}>
+                  <div
+                    className={`flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2 transition hover:bg-card-hover ${isExpanded ? "bg-card-hover" : ""}`}
+                    onClick={() => setExpandedProvince(isExpanded ? null : ps.province_en)}
+                  >
+                    <span className="w-6 text-right font-mono text-muted text-sm">{i + 1}</span>
+                    <span className="w-24 shrink-0 font-medium text-sm">
+                      {lang === "en" ? ps.province_en : ps.province_zh}
+                    </span>
+                    <div className="flex-1 h-7 bg-background rounded-md overflow-hidden relative">
+                      <div
+                        className="h-full rounded-md transition-all duration-500"
+                        style={{
+                          width: `${pct}%`,
+                          background: i === 0
+                            ? "linear-gradient(90deg, #f59e0b, #ef4444)"
+                            : i === 1
+                            ? "linear-gradient(90deg, #f59e0b, #f97316)"
+                            : i === 2
+                            ? "linear-gradient(90deg, #d97706, #f59e0b)"
+                            : "linear-gradient(90deg, #475569, #64748b)",
+                        }}
+                      />
+                      <span className="absolute inset-0 flex items-center px-2 text-xs font-bold text-white drop-shadow">
+                        {ps.count} {lang === "en" ? "people" : "人"}
+                      </span>
+                    </div>
+                    <span className="w-20 text-right text-xs text-muted hidden sm:block">
+                      H̄ {ps.avg_h_index}
+                    </span>
+                    <span className="text-xs text-muted">{isExpanded ? "▲" : "▼"}</span>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="ml-10 mt-1 mb-2 animate-fade-in">
+                      <div className="bg-background rounded-lg border border-border p-4 space-y-3">
+                        <div className="flex gap-6 flex-wrap text-sm">
+                          <div>
+                            <span className="text-muted">{t.people_count}: </span>
+                            <span className="font-bold text-accent">{ps.count}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted">{t.avg_h_province}: </span>
+                            <span className="font-bold">{ps.avg_h_index}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted">{t.total_cit_province}: </span>
+                            <span className="font-bold">{formatNumber(ps.total_citations)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted mb-2">{t.top_researchers}:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {ps.researchers.map((r) => (
+                              <span
+                                key={r.id}
+                                className="inline-flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1 text-xs"
+                              >
+                                <span className="font-medium">{lang === "en" ? r.name_en : r.name_zh}</span>
+                                <span className="text-accent font-mono">H:{r.h_index}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Footer */}
         <footer className="text-center text-xs text-muted py-6 border-t border-border">

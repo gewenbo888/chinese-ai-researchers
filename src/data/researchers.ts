@@ -12,7 +12,39 @@ export interface Researcher {
   notable_work_en: string;
   notable_work_zh: string;
   country: string;
+  native_province_en: string;
+  native_province_zh: string;
   homepage?: string;
+}
+
+export interface ProvinceStats {
+  province_en: string;
+  province_zh: string;
+  count: number;
+  researchers: Researcher[];
+  avg_h_index: number;
+  total_citations: number;
+}
+
+export function getProvinceStats(data: Researcher[]): ProvinceStats[] {
+  const map = new Map<string, Researcher[]>();
+  for (const r of data) {
+    const key = r.native_province_en;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(r);
+  }
+  const stats: ProvinceStats[] = [];
+  for (const [province_en, rs] of map) {
+    stats.push({
+      province_en,
+      province_zh: rs[0].native_province_zh,
+      count: rs.length,
+      researchers: rs.sort((a, b) => b.h_index - a.h_index),
+      avg_h_index: Math.round(rs.reduce((s, r) => s + r.h_index, 0) / rs.length),
+      total_citations: rs.reduce((s, r) => s + r.citations, 0),
+    });
+  }
+  return stats.sort((a, b) => b.count - a.count || b.avg_h_index - a.avg_h_index);
 }
 
 export const researchers: Researcher[] = [
@@ -30,6 +62,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Google Brain, Coursera Co-founder, Former Baidu Chief Scientist",
     notable_work_zh: "谷歌大脑、Coursera联合创始人、前百度首席科学家",
     country: "🇺🇸",
+    native_province_en: "Guangdong",
+    native_province_zh: "广东",
   },
   {
     id: 2,
@@ -45,6 +79,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Turing Award 2018, Convolutional Neural Networks Pioneer",
     notable_work_zh: "2018年图灵奖、卷积神经网络先驱",
     country: "🇺🇸",
+    native_province_en: "France (non-Chinese)",
+    native_province_zh: "法国（非华裔）",
     homepage: "https://yann.lecun.com",
   },
   {
@@ -61,6 +97,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ImageNet Creator, Stanford HAI Co-Director, World AI Council Member",
     notable_work_zh: "ImageNet创建者、斯坦福HAI联合主任、世界人工智能大会成员",
     country: "🇺🇸",
+    native_province_en: "Beijing",
+    native_province_zh: "北京",
   },
   {
     id: 4,
@@ -76,6 +114,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "AI Superpowers Author, Former Google China President, Sinovation Ventures CEO",
     notable_work_zh: "《AI·未来》作者、前谷歌中国总裁、创新工场CEO",
     country: "🇨🇳",
+    native_province_en: "Taiwan",
+    native_province_zh: "台湾",
   },
   {
     id: 5,
@@ -91,6 +131,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ResNet Co-inventor, Former Microsoft Research Asia",
     notable_work_zh: "ResNet共同发明者、前微软亚洲研究院",
     country: "🇨🇳",
+    native_province_en: "Shaanxi",
+    native_province_zh: "陕西",
   },
   {
     id: 6,
@@ -106,6 +148,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ResNet, Mask R-CNN, MAE, Most Cited AI Researcher",
     notable_work_zh: "ResNet、Mask R-CNN、MAE、最高引用AI研究者之一",
     country: "🇺🇸",
+    native_province_en: "Guangdong",
+    native_province_zh: "广东",
   },
   {
     id: 7,
@@ -121,6 +165,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Perceptual Grouping Pioneer, Berkeley AI Research Lab",
     notable_work_zh: "感知分组先驱、伯克利AI研究实验室",
     country: "🇺🇸",
+    native_province_en: "India (non-Chinese)",
+    native_province_zh: "印度（非华裔）",
   },
   {
     id: 8,
@@ -136,6 +182,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Neural Structured Prediction, ACL Fellow",
     notable_work_zh: "神经结构预测、ACL Fellow",
     country: "🇨🇳",
+    native_province_en: "Jiangsu",
+    native_province_zh: "江苏",
   },
   {
     id: 9,
@@ -151,6 +199,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "LINE, RotatE, AI for Science Pioneer",
     notable_work_zh: "LINE、RotatE、科学智能先驱",
     country: "🇨🇦",
+    native_province_en: "Shandong",
+    native_province_zh: "山东",
   },
   {
     id: 10,
@@ -166,6 +216,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Deep Forest, Ensemble Methods, AAAI/IEEE Fellow",
     notable_work_zh: "深度森林、集成方法、AAAI/IEEE Fellow",
     country: "🇨🇳",
+    native_province_en: "Jiangsu",
+    native_province_zh: "江苏",
   },
   {
     id: 11,
@@ -181,6 +233,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "MXNet Co-creator, D2L.ai Author, GluonCV",
     notable_work_zh: "MXNet共同创建者、《动手学深度学习》作者、GluonCV",
     country: "🇺🇸",
+    native_province_en: "Shanghai",
+    native_province_zh: "上海",
   },
   {
     id: 12,
@@ -196,6 +250,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "AMiner Creator, GLM/ChatGLM Lead, ACM Fellow",
     notable_work_zh: "AMiner创建者、GLM/ChatGLM负责人、ACM Fellow",
     country: "🇨🇳",
+    native_province_en: "Hubei",
+    native_province_zh: "湖北",
   },
   {
     id: 13,
@@ -211,6 +267,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "IEEE/ACM Fellow, Transfer Learning Pioneer, Most Prolific AI Author",
     notable_work_zh: "IEEE/ACM Fellow、迁移学习先驱、最多产AI作者之一",
     country: "🇸🇬",
+    native_province_en: "Anhui",
+    native_province_zh: "安徽",
   },
   {
     id: 14,
@@ -226,6 +284,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Text Categorization, Transformer-XL Co-author",
     notable_work_zh: "文本分类、Transformer-XL共同作者",
     country: "🇺🇸",
+    native_province_en: "Shanghai",
+    native_province_zh: "上海",
   },
   {
     id: 15,
@@ -241,6 +301,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Statistical Learning Methods Author, Former Huawei Noah's Ark Lab Director",
     notable_work_zh: "《统计学习方法》作者、前华为诺亚方舟实验室主任",
     country: "🇨🇳",
+    native_province_en: "Jiangsu",
+    native_province_zh: "江苏",
   },
   {
     id: 16,
@@ -256,6 +318,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Deep Compression, Neural Architecture Search, MIT HAN Lab",
     notable_work_zh: "深度压缩、神经架构搜索、MIT HAN实验室",
     country: "🇺🇸",
+    native_province_en: "Shandong",
+    native_province_zh: "山东",
   },
   {
     id: 17,
@@ -271,6 +335,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Low-Rank Representation, Optimization for Deep Learning",
     notable_work_zh: "低秩表示、深度学习优化",
     country: "🇨🇳",
+    native_province_en: "Fujian",
+    native_province_zh: "福建",
   },
   {
     id: 18,
@@ -286,6 +352,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "SenseTime Co-founder, DeepID Series, Face Recognition Pioneer",
     notable_work_zh: "商汤科技联合创始人、DeepID系列、人脸识别先驱",
     country: "🇭🇰",
+    native_province_en: "Heilongjiang",
+    native_province_zh: "黑龙江",
   },
   {
     id: 19,
@@ -301,6 +369,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "SenseTime Founder, GaussianFace, Pioneer of AI Industry in China",
     notable_work_zh: "商汤科技创始人、GaussianFace、中国AI产业先驱",
     country: "🇭🇰",
+    native_province_en: "Liaoning",
+    native_province_zh: "辽宁",
   },
   {
     id: 20,
@@ -316,6 +386,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Places Dataset, GAN Dissection, Network Interpretability",
     notable_work_zh: "Places数据集、GAN解剖、网络可解释性",
     country: "🇺🇸",
+    native_province_en: "Guangdong",
+    native_province_zh: "广东",
   },
   {
     id: 21,
@@ -331,6 +403,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Bayesian Learning, Adversarial Robustness, Tsinghua AI Institute",
     notable_work_zh: "贝叶斯学习、对抗鲁棒性、清华人工智能研究院",
     country: "🇨🇳",
+    native_province_en: "Sichuan",
+    native_province_zh: "四川",
   },
   {
     id: 22,
@@ -346,6 +420,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "R-CNN Series, Deformable ConvNets, Detectron",
     notable_work_zh: "R-CNN系列、可变形卷积网络、Detectron",
     country: "🇺🇸",
+    native_province_en: "USA (non-Chinese)",
+    native_province_zh: "美国（非华裔）",
   },
   {
     id: 23,
@@ -361,6 +437,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Faster R-CNN Co-inventor, ResNet Co-author",
     notable_work_zh: "Faster R-CNN共同发明者、ResNet共同作者",
     country: "🇬🇧",
+    native_province_en: "Jiangsu",
+    native_province_zh: "江苏",
   },
   {
     id: 24,
@@ -376,6 +454,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Robust PCA, Sparse Representation Theory, White-Box Deep Learning",
     notable_work_zh: "鲁棒PCA、稀疏表示理论、白盒深度学习",
     country: "🇺🇸",
+    native_province_en: "Shanghai",
+    native_province_zh: "上海",
   },
   {
     id: 25,
@@ -391,6 +471,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "EfficientNet, T5 Model, Google Brain Pioneer",
     notable_work_zh: "EfficientNet、T5模型、谷歌大脑先驱",
     country: "🇺🇸",
+    native_province_en: "Vietnam (Vietnamese)",
+    native_province_zh: "越南（越南裔）",
   },
   {
     id: 26,
@@ -406,6 +488,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Statistical Learning Theory, Former Tencent AI Lab Director",
     notable_work_zh: "统计学习理论、前腾讯AI实验室主任",
     country: "🇺🇸",
+    native_province_en: "Beijing",
+    native_province_zh: "北京",
   },
   {
     id: 27,
@@ -421,6 +505,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Spectral Clustering, ICSI Vision Group, Self-Supervised Learning",
     notable_work_zh: "谱聚类、ICSI视觉组、自监督学习",
     country: "🇺🇸",
+    native_province_en: "Zhejiang",
+    native_province_zh: "浙江",
   },
   {
     id: 28,
@@ -436,6 +522,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Optical Flow Estimation, Visual Dynamics, Microsoft/Google Research",
     notable_work_zh: "光流估计、视觉动力学、微软/谷歌研究",
     country: "🇺🇸",
+    native_province_en: "Zhejiang",
+    native_province_zh: "浙江",
   },
   {
     id: 29,
@@ -451,6 +539,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "3D-Aware Generation, Physics-Based Vision, Rising Star in AI",
     notable_work_zh: "三维感知生成、基于物理的视觉、AI新星",
     country: "🇺🇸",
+    native_province_en: "Beijing",
+    native_province_zh: "北京",
   },
   {
     id: 30,
@@ -466,6 +556,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Machine Learning (textbook), gcForest, IEEE/AAAI Fellow",
     notable_work_zh: "《机器学习》（西瓜书）、gcForest、IEEE/AAAI Fellow",
     country: "🇨🇳",
+    native_province_en: "Jiangsu",
+    native_province_zh: "江苏",
   },
   {
     id: 31,
@@ -481,6 +573,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ShuffleNet, ResNet Co-author, Efficient Model Design",
     notable_work_zh: "ShuffleNet、ResNet共同作者、高效模型设计",
     country: "🇨🇳",
+    native_province_en: "Heilongjiang",
+    native_province_zh: "黑龙江",
   },
   {
     id: 32,
@@ -496,6 +590,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "GraphRNN, Design Space for GNNs, PyG Contributor",
     notable_work_zh: "GraphRNN、GNN设计空间、PyG贡献者",
     country: "🇺🇸",
+    native_province_en: "Zhejiang",
+    native_province_zh: "浙江",
   },
   {
     id: 33,
@@ -511,6 +607,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ResNeXt, ConvNeXt, Aggregated Residual Transformations",
     notable_work_zh: "ResNeXt、ConvNeXt、聚合残差变换",
     country: "🇺🇸",
+    native_province_en: "Shanghai",
+    native_province_zh: "上海",
   },
   {
     id: 34,
@@ -526,6 +624,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "DeepLab Series, Atrous Convolution, Panoptic Segmentation",
     notable_work_zh: "DeepLab系列、空洞卷积、全景分割",
     country: "🇺🇸",
+    native_province_en: "Taiwan",
+    native_province_zh: "台湾",
   },
   {
     id: 35,
@@ -541,6 +641,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "SSD (Single Shot MultiBox Detector), Hashing for Retrieval",
     notable_work_zh: "SSD（单次多框检测器）、哈希检索",
     country: "🇨🇳",
+    native_province_en: "Hubei",
+    native_province_zh: "湖北",
   },
   {
     id: 36,
@@ -556,6 +658,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Robot Learning Pioneer, Offline RL, Foundation Models for Robotics",
     notable_work_zh: "机器人学习先驱、离线强化学习、机器人基础模型",
     country: "🇺🇸",
+    native_province_en: "Russia (non-Chinese)",
+    native_province_zh: "俄罗斯（非华裔）",
   },
   {
     id: 37,
@@ -571,6 +675,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Florence, BEiT, Swin Transformer Co-author",
     notable_work_zh: "Florence、BEiT、Swin Transformer共同作者",
     country: "🇺🇸",
+    native_province_en: "Hunan",
+    native_province_zh: "湖南",
   },
   {
     id: 38,
@@ -586,6 +692,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Swin Transformer Lead Author, Video Swin Transformer",
     notable_work_zh: "Swin Transformer第一作者、Video Swin Transformer",
     country: "🇨🇳",
+    native_province_en: "Henan",
+    native_province_zh: "河南",
   },
   {
     id: 39,
@@ -601,6 +709,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Detectron2 Lead Developer, Group Normalization Co-author",
     notable_work_zh: "Detectron2首席开发者、组归一化共同作者",
     country: "🇺🇸",
+    native_province_en: "Zhejiang",
+    native_province_zh: "浙江",
   },
   {
     id: 40,
@@ -616,6 +726,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ThreeDWorld, Sound-Vision Learning, Embodied AI Pioneer",
     notable_work_zh: "ThreeDWorld、声音-视觉学习、具身智能先驱",
     country: "🇺🇸",
+    native_province_en: "Guangdong",
+    native_province_zh: "广东",
   },
   {
     id: 41,
@@ -631,6 +743,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "PSPNet, Point Transformer, 3D Vision",
     notable_work_zh: "PSPNet、Point Transformer、三维视觉",
     country: "🇭🇰",
+    native_province_en: "Liaoning",
+    native_province_zh: "辽宁",
   },
   {
     id: 42,
@@ -646,6 +760,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Zero-Shot Learning, Domain Adaptation, Video Surveillance",
     notable_work_zh: "零样本学习、域适应、视频监控",
     country: "🇬🇧",
+    native_province_en: "Hunan",
+    native_province_zh: "湖南",
   },
   {
     id: 43,
@@ -661,6 +777,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Waabi CEO, Uber ATG Former Chief Scientist, Self-Driving Pioneer",
     notable_work_zh: "Waabi CEO、前Uber ATG首席科学家、自动驾驶先驱",
     country: "🇨🇦",
+    native_province_en: "Spain (non-Chinese)",
+    native_province_zh: "西班牙（非华裔）",
   },
   {
     id: 44,
@@ -676,6 +794,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Visual Tracking Benchmark, Face Detection Pioneer",
     notable_work_zh: "视觉跟踪基准、人脸检测先驱",
     country: "🇺🇸",
+    native_province_en: "Taiwan",
+    native_province_zh: "台湾",
   },
   {
     id: 45,
@@ -691,6 +811,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Real-time Face Tracking, Pinscreen CEO, Digital Human Pioneer",
     notable_work_zh: "实时人脸跟踪、Pinscreen CEO、数字人先驱",
     country: "🇺🇸",
+    native_province_en: "Sichuan",
+    native_province_zh: "四川",
   },
   {
     id: 46,
@@ -706,6 +828,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "AI Ethics Pioneer, Datasheets for Datasets, DAIR Founder",
     notable_work_zh: "AI伦理先驱、数据集数据表、DAIR创始人",
     country: "🇺🇸",
+    native_province_en: "Ethiopia (non-Chinese)",
+    native_province_zh: "埃塞俄比亚（非华裔）",
   },
   {
     id: 47,
@@ -721,6 +845,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "AI Paper Reviews, ML Community Educator",
     notable_work_zh: "AI论文解读、机器学习社区教育者",
     country: "🇨🇭",
+    native_province_en: "Switzerland (non-Chinese)",
+    native_province_zh: "瑞士（非华裔）",
   },
   {
     id: 48,
@@ -736,6 +862,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Visual Transformers, NUS Professor, ByteDance Research VP",
     notable_work_zh: "视觉Transformer、新加坡国立大学教授、字节跳动研究VP",
     country: "🇸🇬",
+    native_province_en: "Hubei",
+    native_province_zh: "湖北",
   },
   {
     id: 49,
@@ -751,6 +879,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "Phi Series Small Language Models, Mathematical Reasoning",
     notable_work_zh: "Phi系列小语言模型、数学推理",
     country: "🇺🇸",
+    native_province_en: "Shandong",
+    native_province_zh: "山东",
   },
   {
     id: 50,
@@ -766,6 +896,8 @@ export const researchers: Researcher[] = [
     notable_work_en: "ConvNeXt Co-author, DenseNet Co-author",
     notable_work_zh: "ConvNeXt共同作者、DenseNet共同作者",
     country: "🇺🇸",
+    native_province_en: "Guangdong",
+    native_province_zh: "广东",
   },
 ];
 
