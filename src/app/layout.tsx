@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     languages: { en: "/", "zh-CN": "/", "x-default": "/" },
   },
   openGraph: {
+    images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "Chinese AI Researchers" }],
     title: "Global Chinese AI Researchers Ranking",
     description: "全球华人人工智能科学家影响力综合排名。",
     url: "https://researchers.psyverse.fun/",
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
     alternateLocale: ["zh_CN"],
   },
   twitter: {
+    images: ["/twitter-image.png"],
     card: "summary_large_image",
     title: "Chinese AI Researchers Ranking",
     description: "全球华人人工智能科学家影响力综合排名。",
