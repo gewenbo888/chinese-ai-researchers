@@ -101,7 +101,7 @@ export default function Home() {
                   : "border-transparent text-muted hover:text-foreground hover:bg-card-hover"
               }`}
             >
-              {lang === "en" ? "Province Rank" : "省份排名"}
+              {t.province_tab}
               <span className="ml-1.5 text-xs bg-accent/20 text-accent rounded-full px-1.5 py-0.5">
                 {provinceStats.length}
               </span>
@@ -118,7 +118,7 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-card rounded-xl p-4 border border-border">
-                <p className="text-muted text-xs uppercase tracking-wider">{lang === "en" ? "Researchers" : "研究人员"}</p>
+                <p className="text-muted text-xs uppercase tracking-wider">{t.unit_label}</p>
                 <p className="text-3xl font-bold text-accent mt-1">{filtered.length}</p>
               </div>
               <div className="bg-card rounded-xl p-4 border border-border">
@@ -215,7 +215,7 @@ export default function Home() {
                   {filtered.length === 0 && (
                     <tr>
                       <td colSpan={8} className="px-4 py-12 text-center text-muted">
-                        {lang === "en" ? "No researchers found." : "未找到研究人员。"}
+                        {t.none_found}
                       </td>
                     </tr>
                   )}
@@ -282,17 +282,17 @@ export default function Home() {
                 <p className="text-3xl font-bold text-accent mt-1">{provinceStats.length}</p>
               </div>
               <div className="bg-card rounded-xl p-4 border border-border">
-                <p className="text-muted text-xs uppercase tracking-wider">{lang === "en" ? "Total Researchers" : "总人数"}</p>
+                <p className="text-muted text-xs uppercase tracking-wider">{t.unit_total}</p>
                 <p className="text-3xl font-bold text-foreground mt-1">{researchers.length}</p>
               </div>
               <div className="bg-card rounded-xl p-4 border border-border">
-                <p className="text-muted text-xs uppercase tracking-wider">{lang === "en" ? "Top Province" : "第一省份"}</p>
+                <p className="text-muted text-xs uppercase tracking-wider">{t.top_province}</p>
                 <p className="text-2xl font-bold text-foreground mt-1">
                   {lang === "en" ? provinceStats[0]?.province_en : provinceStats[0]?.province_zh}
                 </p>
               </div>
               <div className="bg-card rounded-xl p-4 border border-border">
-                <p className="text-muted text-xs uppercase tracking-wider">{lang === "en" ? "Top Province Count" : "第一省份人数"}</p>
+                <p className="text-muted text-xs uppercase tracking-wider">{t.top_province_count}</p>
                 <p className="text-3xl font-bold text-foreground mt-1">{provinceStats[0]?.count}</p>
               </div>
             </div>
@@ -335,7 +335,7 @@ export default function Home() {
                           }}
                         />
                         <span className="absolute inset-0 flex items-center px-3 text-xs font-bold text-white drop-shadow-sm">
-                          {ps.count} {lang === "en" ? "people" : "人"}
+                          {ps.count} {t.unit_count}
                         </span>
                       </div>
                       <span className="w-16 text-right text-xs text-muted hidden sm:block font-mono">
